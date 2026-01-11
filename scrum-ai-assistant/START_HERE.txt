@@ -1,0 +1,273 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        🚀 START HERE - BEGINNER GUIDE                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+NEW TO PYTHON OR DOCKER? NO PROBLEM!
+This guide is designed for complete beginners.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ QUICK START (5 MINUTES)
+
+Step 1: Start Services
+  cd /workspaces/AiScrumAssistant/scrum-ai-assistant
+  docker-compose up -d
+  
+  ⏳ Wait 30 seconds
+
+Step 2: Initialize Database
+  docker-compose exec api alembic upgrade head
+
+Step 3: Verify Everything Works
+  curl http://localhost:8000/health
+
+You should see: {"status":"healthy",...}
+
+✅ Done! Your app is running!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 TESTING (Pick One)
+
+Option 1: Web Interface (EASIEST)
+  1. Open browser
+  2. Go to: http://localhost:8000/docs
+  3. Click on an endpoint
+  4. Click "Try it out"
+  5. Click "Execute"
+
+Option 2: Automated Test (EASIEST)
+  bash test-api.sh
+  
+  This will automatically:
+  ✓ Create a meeting
+  ✓ Add a transcript
+  ✓ Extract data with AI
+  ✓ Show you the results
+
+Option 3: Manual Commands (FOR LEARNING)
+  curl -X POST http://localhost:8000/api/meetings \
+    -H "Content-Type: application/json" \
+    -d '{"title":"Test","ceremony_type":"STANDUP",...}'
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION (READ IN THIS ORDER)
+
+1. GETTING_STARTED.md (← YOU ARE HERE)
+   Quick intro for beginners
+
+2. BEGINNER_GUIDE.md
+   Detailed step-by-step explanations
+
+3. QUICKSTART.md
+   5-minute feature overview
+
+4. README.md
+   Complete feature guide with all endpoints
+
+5. ARCHITECTURE.md
+   System design and deployment (advanced)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 WHAT THIS APP DOES
+
+In simple terms:
+
+Input:  Meeting transcript (text from a meeting)
+        ↓
+        AI reads it and finds:
+        - Decisions made
+        - Blockers (problems)
+        - Action items (tasks to do)
+        ↓
+Output: Tasks created in Jira automatically
+
+Example:
+  Input:  "Team meeting. Sarah finished login. Decision: Use React Query.
+           John blocked on API. Action: Tom complete payment by Friday."
+  
+  Output: 
+    Decisions: [Use React Query]
+    Blockers: [API not ready]
+    Tasks: [Complete payment integration - assigned to Tom]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 KEY CONCEPTS FOR BEGINNERS
+
+Docker
+  - Container = sealed box with everything your app needs
+  - docker-compose = start multiple containers with one command
+  - You don't install Python, databases separately
+
+API (Application Programming Interface)
+  - Way to talk to an application
+  - Send request → Get response
+  - Like a waiter taking your order
+
+REST
+  - GET = ask for information
+  - POST = send information
+  - Common way to build APIs
+
+JSON
+  - Format for data (like a structured text)
+  - {"name": "value", "id": 123}
+
+curl
+  - Command-line tool to make web requests
+  - Test APIs from terminal
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛠️ USEFUL COMMANDS
+
+Start everything
+  docker-compose up -d
+
+View logs (see what's happening)
+  docker-compose logs -f api
+
+Stop everything
+  docker-compose down
+
+Restart everything
+  docker-compose down && docker-compose up -d
+
+Check if services are running
+  docker-compose ps
+
+Run the automated test
+  bash test-api.sh
+
+Open API documentation
+  http://localhost:8000/docs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ COMMON QUESTIONS
+
+Q: Do I need to know Python?
+A: No! Docker handles everything. You just need to run commands.
+
+Q: What is Docker?
+A: Software that packages the app so you don't need to install everything.
+
+Q: Why use this instead of manual notes?
+A: It's automatic! Meeting → AI extracts → Tasks created. Saves time.
+
+Q: How long does it take to learn?
+A: 5 minutes to run it. 1 hour to understand everything.
+
+Q: Can I break something?
+A: No! You can only run commands. Can't modify code unless you want to.
+
+Q: What if I get an error?
+A: Read the error message (usually tells you what's wrong).
+   Check logs: docker-compose logs -f api
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ TROUBLESHOOTING
+
+Problem: "Connection refused"
+Solution: Wait 60 seconds and try again. Services take time to start.
+
+Problem: "Cannot find docker"
+Solution: Install Docker Desktop from https://www.docker.com
+
+Problem: "Port 8000 already in use"
+Solution: 
+  docker-compose down
+  docker-compose up -d
+
+Problem: Test script fails
+Solution:
+  1. Check if services are running: docker-compose ps
+  2. Check logs: docker-compose logs
+  3. Make sure you ran: docker-compose exec api alembic upgrade head
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📈 LEARNING PATH
+
+Week 1: Getting Started
+  □ Run docker-compose up -d
+  □ Run bash test-api.sh
+  □ Visit http://localhost:8000/docs
+  □ Try some API endpoints
+  □ Read BEGINNER_GUIDE.md
+
+Week 2: Understanding Features
+  □ Read README.md
+  □ Try different meeting types (STANDUP, PLANNING, etc.)
+  □ Configure Jira credentials
+  □ Try sending to Slack
+  □ Read ARCHITECTURE.md
+
+Week 3+: Advanced
+  □ Deploy to cloud
+  □ Add API authentication
+  □ Integrate real AI (OpenAI GPT-4)
+  □ Scale to multiple workers
+  □ Set up monitoring
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIPS
+
+1. Start with the web interface (http://localhost:8000/docs)
+   - More visual than command line
+   - Shows what parameters each endpoint needs
+
+2. Use docker-compose logs -f to see what's happening
+   - Real-time view of what the app is doing
+
+3. Read error messages carefully
+   - They usually tell you exactly what's wrong
+
+4. Try small changes first
+   - Modify the meeting title
+   - See how the app responds
+
+5. Be patient with learning
+   - Take it step by step
+   - Understanding is more important than speed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CHECKLIST
+
+Before moving to advanced topics, make sure you've:
+
+□ Successfully run docker-compose up -d
+□ Successfully run docker-compose exec api alembic upgrade head
+□ Successfully got health check response
+□ Successfully ran bash test-api.sh
+□ Successfully used http://localhost:8000/docs
+□ Understand what API endpoints are
+□ Understand what JSON is
+□ Understand that Docker is just containerization
+□ Read at least the first 2 documentation files
+□ Can start and stop services
+
+If you've done all of these, you're ready to learn more!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 YOU'RE READY TO BEGIN!
+
+Next Steps:
+1. Open terminal
+2. cd /workspaces/AiScrumAssistant/scrum-ai-assistant
+3. docker-compose up -d
+4. docker-compose exec api alembic upgrade head
+5. bash test-api.sh
+
+Then open: http://localhost:8000/docs
+
+Questions? See BEGINNER_GUIDE.md
+
+Happy automating! 🚀

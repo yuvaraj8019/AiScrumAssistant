@@ -1,0 +1,126 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: scrum-ai-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: scrum_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - scrum-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: scrum-ai-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - scrum-network
+
+  # FastAPI Application
+  api:
+    build: .
+    container_name: scrum-ai-api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/scrum_db
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND_URL: redis://redis:6379/1
+      JIRA_BASE_URL: ${JIRA_BASE_URL}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN}
+      JIRA_USER_EMAIL: ${JIRA_USER_EMAIL}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - scrum-network
+
+  # Celery Worker
+  celery_worker:
+    build: .
+    container_name: scrum-ai-celery-worker
+    command: celery -A app.workers.celery_app worker --loglevel=info --queues=default,processing,notifications
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/scrum_db
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND_URL: redis://redis:6379/1
+      JIRA_BASE_URL: ${JIRA_BASE_URL}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN}
+      JIRA_USER_EMAIL: ${JIRA_USER_EMAIL}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - scrum-network
+
+  # Celery Beat Scheduler
+  celery_beat:
+    build: .
+    container_name: scrum-ai-celery-beat
+    command: celery -A app.workers.celery_app beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/scrum_db
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND_URL: redis://redis:6379/1
+      JIRA_BASE_URL: ${JIRA_BASE_URL}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN}
+      JIRA_USER_EMAIL: ${JIRA_USER_EMAIL}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - scrum-network
+
+volumes:
+  postgres_data:
+
+networks:
+  scrum-network:
+    driver: bridge
