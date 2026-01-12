@@ -9,7 +9,7 @@ from app.core.config import get_settings
 settings = get_settings()
 
 # Create Celery app
-celery_app = Celery("scrum_ai_assistant")
+celery_app = Celery("scrum_ai_assistant", include=["app.workers.tasks"])
 
 # Configuration
 celery_app.conf.update(

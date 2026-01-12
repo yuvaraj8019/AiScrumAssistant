@@ -57,6 +57,8 @@ class JiraIntegrationService(ToolIntegration):
 
         except httpx.HTTPError as e:
             logger.error(f"Jira API error: {str(e)}")
+            if hasattr(e, 'response') and e.response is not None:
+                logger.error(f"Response body: {e.response.text}")
             raise
 
     def create_issue(self, summary: str, description: str, project_key: str) -> str:
@@ -68,12 +70,12 @@ class JiraIntegrationService(ToolIntegration):
                 "project": {"key": project_key},
                 "summary": summary,
                 "description": {"content": [{"content": [{"text": description, "type": "text"}], "type": "paragraph"}], "type": "doc", "version": 1},
-                "issuetype": {"name": "Task"},
+                "issuetype": {"id": "10001"},
             }
         }
 
         try:
-            result = self._make_request("POST", "/issues", json_data=payload)
+            result = self._make_request("POST", "/issue", json_data=payload)
             issue_key = result.get("key")
             logger.info(f"Created Jira issue: {issue_key}")
             return issue_key
@@ -99,7 +101,7 @@ class JiraIntegrationService(ToolIntegration):
         }
 
         try:
-            self._make_request("POST", f"/issues/{issue_key}/comments", json_data=payload)
+            self._make_request("POST", f"/issue/{issue_key}/comment", json_data=payload)
             logger.info(f"Added comment to {issue_key}")
         except Exception as e:
             logger.error(f"Failed to add comment to {issue_key}: {str(e)}")
@@ -110,7 +112,7 @@ class JiraIntegrationService(ToolIntegration):
         logger.info(f"Fetching status for Jira issue {issue_key}")
 
         try:
-            result = self._make_request("GET", f"/issues/{issue_key}")
+            result = self._make_request("GET", f"/issue/{issue_key}")
             status = result.get("fields", {}).get("status", {}).get("name", "Unknown")
             logger.info(f"Issue {issue_key} status: {status}")
             return status

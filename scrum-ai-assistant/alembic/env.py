@@ -1,6 +1,10 @@
 """
 Alembic environment configuration.
 """
+import sys
+import os
+sys.path.append(os.getcwd())
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config

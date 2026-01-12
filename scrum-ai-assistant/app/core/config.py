@@ -41,10 +41,6 @@ class Settings(BaseSettings):
     # Slack
     SLACK_WEBHOOK_URL: Optional[str] = None
 
-    # File storage
-    AUDIO_STORAGE_PATH: str = "/data/audio"
-
-    # Logging
     LOG_LEVEL: str = "INFO"
 
     class Config:
